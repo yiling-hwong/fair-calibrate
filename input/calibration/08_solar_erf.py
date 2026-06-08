@@ -10,20 +10,26 @@ import os
 import numpy as np
 import pandas as pd
 import pooch
+from dotenv import load_dotenv
 from netCDF4 import Dataset
 
 import matplotlib.pyplot as pl
+
+load_dotenv()
+datadir = os.getenv("DATADIR")
 
 print("Making solar forcing ERF time series...")
 
 filepath_future = pooch.retrieve(
     url = "https://esgf-node.ornl.gov/thredds/fileServer/user_pub_work/input4MIPs/CMIP7/ScenarioMIP/SOLARIS-HEPPA/SOLARIS-HEPPA-ScenarioMIP-4-6/atmos/mon/multiple/gn/v20260115/multiple_input4MIPs_solar_ScenarioMIP_SOLARIS-HEPPA-ScenarioMIP-4-6_gn_202201-229912.nc",
     known_hash = "146e68a842295d840c036807f5de751acda2d3e561c7f00dbf502c35516b782d",
+    path=datadir,
 )
 
 filepath_historical = pooch.retrieve(
     url = "https://esgf-node.ornl.gov/thredds/fileServer/user_pub_work/input4MIPs/CMIP7/CMIP/SOLARIS-HEPPA/SOLARIS-HEPPA-CMIP-4-6/atmos/mon/multiple/gn/v20250219/multiple_input4MIPs_solar_CMIP_SOLARIS-HEPPA-CMIP-4-6_gn_185001-202312.nc",
-    known_hash="536498e442ed4c279ce91eeecabf1908a25142b3dc9a2d0825eb1121886b4581"
+    known_hash="536498e442ed4c279ce91eeecabf1908a25142b3dc9a2d0825eb1121886b4581",
+    path=datadir,
 )
 
 nc = Dataset(filepath_historical)

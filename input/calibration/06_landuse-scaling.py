@@ -42,10 +42,17 @@ df = pd.DataFrame(
     columns=["CO2_AFOLU"],
     index=["historical_best"],
 )
+# YLH 2026-06-08: chanegd output path
+# os.makedirs(
+#     "../../output/fair-{fair_v}/v{cal_v}/{constraint_set}/calibrations/",
+#     exist_ok=True,
+# )
+
 os.makedirs(
-    "../../output/fair-{fair_v}/v{cal_v}/{constraint_set}/calibrations/",
+    "../../output/calibrations/",
     exist_ok=True,
 )
+
 df.to_csv(
     "../../output/calibrations/"
     "landuse_scale_factor.csv"

@@ -30,6 +30,13 @@ plots/
 # all output (needs direct Zenodo upload)
 output/
 
+# local notes
+notes/
+
+# AI 
+CLAUDE.md
+.claude/
+
 # OS files
 .DS_Store
 Thumbs.db
@@ -173,3 +180,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# misc
+.idea
