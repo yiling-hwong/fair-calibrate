@@ -30,8 +30,9 @@ plots/
 # all output (needs direct Zenodo upload)
 output/
 
-# local notes
+# local analysis scripts and notes
 notes/
+scripts/
 
 # AI 
 CLAUDE.md

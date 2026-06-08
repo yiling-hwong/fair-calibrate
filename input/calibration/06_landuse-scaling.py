@@ -42,7 +42,7 @@ df = pd.DataFrame(
     columns=["CO2_AFOLU"],
     index=["historical_best"],
 )
-# YLH 2026-06-08: chanegd output path
+# YLH 2026-06-08: changed output path
 # os.makedirs(
 #     "../../output/fair-{fair_v}/v{cal_v}/{constraint_set}/calibrations/",
 #     exist_ok=True,
