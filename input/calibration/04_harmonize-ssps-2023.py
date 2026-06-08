@@ -29,10 +29,20 @@ from fair_calibrate.parameters import FAIR_VERSION, PRIOR_SAMPLES
 
 load_dotenv()
 
-
 samples = PRIOR_SAMPLES
 progress = os.getenv("PROGRESS", "False").lower() in ("true", "1", "t")
 datadir = os.getenv("DATADIR")
+
+# YLH 2026-06-08: redirect all pooch downloads (including FaIR's internal
+# fill_from_rcmip calls) to DATADIR instead of the default OS cache
+if datadir:
+    import pooch
+    _original_retrieve = pooch.retrieve
+    def _patched_retrieve(url, known_hash, fname=None, path=None, **kwargs):
+        return _original_retrieve(url, known_hash, fname=fname,
+                                  path=path if path is not None else datadir,
+                                  **kwargs)
+    pooch.retrieve = _patched_retrieve
 
 assert __version__ == FAIR_VERSION
 
