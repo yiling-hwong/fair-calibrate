@@ -137,7 +137,7 @@ samples["temperature 2004-2023"] = scipy.stats.skewnorm.rvs(
 #    size=10**5,
 #    random_state=19387,
 #)
-# YLH: ERFari and ERFaci kept at AR6 values — will be updated once AR7 assessment available
+# YLH: TO-DO update ERFari and ERFaci values (waiting for Chris)
 samples["ERFari"] = scipy.stats.norm.rvs(
     loc=-0.3, scale=0.3 / NINETY_TO_ONESIGMA, size=10**5, random_state=70173
 )
