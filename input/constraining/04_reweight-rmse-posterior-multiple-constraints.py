@@ -55,11 +55,11 @@ ohc_in = np.load(
 )
 fari_in = np.load(
     "../../output/prior_runs/"
-    "forcing_ari_2005-2014_mean.npy"
+    "forcing_ari_2014-2023_mean.npy"
 )
 faci_in = np.load(
     "../../output/prior_runs/"
-    "forcing_aci_2005-2014_mean.npy"
+    "forcing_aci_2014-2023_mean.npy"
 )
 co2_in = np.load(
     "../../output/prior_runs/"
@@ -86,7 +86,9 @@ ecs_params = scipy.optimize.root(opt, [1, 1, 1], args=(2, 3, 5)).x
 
 
 # Indicators 2023
-gsat_params = scipy.optimize.root(opt, [1, 1, 1], args=(0.90, 1.05, 1.16)).x
+# YLH: updated GMST 2004-2023 constraint to AR7 values (was 0.90/1.05/1.16, Zeke Hausfather ensemble)
+gsat_params = scipy.optimize.root(opt, [1, 1, 1], args=(0.92, 1.035, 1.191)).x
+#gsat_params = scipy.optimize.root(opt, [1, 1, 1], args=(0.90, 1.05, 1.16)).x
 
 samples = {}
 samples["ECS"] = scipy.stats.skewnorm.rvs(
@@ -103,9 +105,14 @@ samples["TCR"] = scipy.stats.norm.rvs(
 # this value from IGCC 2024. Use new uncertainties for ocean, assume same uncertainties
 # for land, atmosphere and cryopshere.
 # looking at new 2024 data from Matt Palmer, it seems unchanged from 1971-2020.
+# YLH: updated OHC 2020-1971 constraint to AR7 values (was loc=465.3, scale=108.5; von Schuckmann et al. 2023)
+# YLH: AR7 5th/50th/95th = 278/380/482 ZJ -> half-90%-CI = 102 ZJ (symmetric)
 samples["OHC"] = scipy.stats.norm.rvs(
-    loc=465.3, scale=108.5 / NINETY_TO_ONESIGMA, size=10**5, random_state=43178
+    loc=380, scale=102 / NINETY_TO_ONESIGMA, size=10**5, random_state=43178
 )
+#samples["OHC"] = scipy.stats.norm.rvs(
+#    loc=465.3, scale=108.5 / NINETY_TO_ONESIGMA, size=10**5, random_state=43178
+#)
 samples["temperature 2004-2023"] = scipy.stats.skewnorm.rvs(
     gsat_params[0],
     loc=gsat_params[1],
@@ -120,23 +127,37 @@ samples["temperature 2004-2023"] = scipy.stats.skewnorm.rvs(
 #    size=10**5,
 #    random_state=19387,
 #)
+# YLH: ERFari and ERFaci kept at AR6 values — will be updated once AR7 assessment available
 samples["ERFari"] = scipy.stats.norm.rvs(
     loc=-0.3, scale=0.3 / NINETY_TO_ONESIGMA, size=10**5, random_state=70173
 )
 samples["ERFaci"] = scipy.stats.norm.rvs(
     loc=-1.0, scale=0.7 / NINETY_TO_ONESIGMA, size=10**5, random_state=91123
 )
+# YLH: updated total ERFaer to AR7 value (was loc=-1.3, scale=sqrt(0.7^2+0.3^2)/NINETY_TO_ONESIGMA)
+# YLH: AR7 5th/50th/95th = -1.78/-1.08/-0.44 W/m2 (2014-2023 vs 1750); avg half-90%-CI = 0.67
 samples["ERFaer"] = scipy.stats.norm.rvs(
-    loc=-1.3,
-    scale=np.sqrt(0.7**2 + 0.3**2) / NINETY_TO_ONESIGMA,
+    loc=-1.08,
+    scale=0.67 / NINETY_TO_ONESIGMA,
     size=10**5,
     random_state=3916153,
 )
+#samples["ERFaer"] = scipy.stats.norm.rvs(
+#    loc=-1.3,
+#    scale=np.sqrt(0.7**2 + 0.3**2) / NINETY_TO_ONESIGMA,
+#    size=10**5,
+#    random_state=3916153,
+#)
 
 # IGCC 2024, using 2023 concentration
+# YLH: updated CO2 2023 uncertainty to AR7 values (was scale=0.4; NOAA GML)
+# YLH: AR7 5th/50th/95th = 419.19/419.36/419.53 ppm -> half-90%-CI = 0.17 ppm
 samples["CO2 concentration"] = scipy.stats.norm.rvs(
-    loc=419.36, scale=0.4, size=10**5, random_state=81693
+    loc=419.36, scale=0.17 / NINETY_TO_ONESIGMA, size=10**5, random_state=81693
 )
+#samples["CO2 concentration"] = scipy.stats.norm.rvs(
+#    loc=419.36, scale=0.4, size=10**5, random_state=81693
+#)
 
 ar_distributions = {}
 for constraint in [

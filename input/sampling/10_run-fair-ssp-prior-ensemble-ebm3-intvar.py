@@ -255,13 +255,17 @@ if __name__ == "__main__":
     )
     np.save(
         "../../output/prior_runs/"
-        "forcing_ari_2005-2014_mean.npy",
+        # YLH change file names for new reference years
+        "forcing_ari_2014-2023_mean.npy",
+        #"forcing_ari_2005-2014_mean.npy",
         fari_out,
         allow_pickle=True,
     )
     np.save(
         "../../output/prior_runs/"
-        "forcing_aci_2005-2014_mean.npy",
+        # YLH change file names for new reference years
+        "forcing_aci_2014-2023_mean.npy",
+        #"forcing_aci_2005-2014_mean.npy",
         faci_out,
         allow_pickle=True,
     )
