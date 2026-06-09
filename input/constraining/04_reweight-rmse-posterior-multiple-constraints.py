@@ -72,6 +72,15 @@ tcr_in = np.load(
     f"../../output/prior_runs/tcr.npy"
 )
 faer_in = fari_in + faci_in
+# YLH: load TCRE — temperature_1pctCO2_1000GtC.npy is positionally indexed within
+# YLH: rmse_pass (not full 1.6M), so need to map valid_temp_af via searchsorted
+rmse_pass_ids = np.loadtxt(
+    "../../output/posteriors/runids_rmse_pass.csv"
+).astype(np.int64)
+tcre_in_all = np.load(
+    "../../output/prior_runs/temperature_1pctCO2_1000GtC.npy"
+)
+tcre_in = tcre_in_all[np.searchsorted(rmse_pass_ids, valid_temp_af)]
 
 
 def opt(x, q05_desired, q50_desired, q95_desired):
@@ -86,7 +95,7 @@ ecs_params = scipy.optimize.root(opt, [1, 1, 1], args=(2, 3, 5)).x
 
 
 # Indicators 2023
-# YLH: updated GMST 2004-2023 constraint to AR7 values (was 0.90/1.05/1.16, Zeke Hausfather ensemble)
+# YLH: updated GMST 2004-2023 constraint to AR7 values (Ch2 Zeke Hausfather ensemble; was 0.90/1.05/1.16)
 gsat_params = scipy.optimize.root(opt, [1, 1, 1], args=(0.92, 1.035, 1.191)).x
 #gsat_params = scipy.optimize.root(opt, [1, 1, 1], args=(0.90, 1.05, 1.16)).x
 
@@ -158,6 +167,12 @@ samples["CO2 concentration"] = scipy.stats.norm.rvs(
 #samples["CO2 concentration"] = scipy.stats.norm.rvs(
 #    loc=419.36, scale=0.4, size=10**5, random_state=81693
 #)
+# YLH: added TCRE as active constraint (was diagnostic-only in v1.6)
+# YLH: AR7 5th/50th/95th = 1/1.65/2.3 K (symmetric) -> half-90%-CI = 0.65 K
+# YLH: uses temperature_1pctCO2_1000GtC.npy from script 02 (1pct CO2 at 1000 GtC cumulative)
+samples["TCRE"] = scipy.stats.norm.rvs(
+    loc=1.65, scale=0.65 / NINETY_TO_ONESIGMA, size=10**5, random_state=63916
+)
 
 ar_distributions = {}
 for constraint in [
@@ -169,6 +184,7 @@ for constraint in [
     "ERFaci",
     "ERFaer",
     "CO2 concentration",
+    "TCRE",
 ]:
     ar_distributions[constraint] = {}
     ar_distributions[constraint]["bins"] = np.histogram(
@@ -196,6 +212,7 @@ accepted = pd.DataFrame(
         "ERFaci": faci_in[valid_temp_af],
         "ERFaer": faer_in[valid_temp_af],
         "CO2 concentration": co2_in[valid_temp_af],
+        "TCRE": tcre_in,  # YLH: added TCRE constraint
     },
     index=valid_temp_af,
 )
