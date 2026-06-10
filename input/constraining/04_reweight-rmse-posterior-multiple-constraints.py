@@ -92,7 +92,9 @@ def opt(x, q05_desired, q50_desired, q95_desired):
     return (q05 - q05_desired, q50 - q50_desired, q95 - q95_desired)
 
 
-ecs_params = scipy.optimize.root(opt, [1, 1, 1], args=(2, 3, 5)).x
+# YLH: updated ECS constraint to prelim. Vince Cooper AR7 values (was 5th/50th/95th = 2/3/5 K)
+ecs_params = scipy.optimize.root(opt, [1, 1, 1], args=(2, 3.5, 6)).x
+#ecs_params = scipy.optimize.root(opt, [1, 1, 1], args=(2, 3, 5)).x
 
 
 # Indicators 2023
