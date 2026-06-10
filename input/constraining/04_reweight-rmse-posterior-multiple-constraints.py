@@ -137,18 +137,29 @@ samples["temperature 2004-2023"] = scipy.stats.skewnorm.rvs(
 #    size=10**5,
 #    random_state=19387,
 #)
-# YLH: TO-DO update ERFari and ERFaci values (waiting for Chris)
+# YLH: updated ERFari and ERFaci to AR7 values from Chris (was loc=-0.3/scale=0.3 and loc=-1.0/scale=0.7 AR6 placeholders)
+# YLH: ERFari AR7 5th/50th/95th = -0.458/-0.227/0.005 W/m2; forced 95th = 0 (scale=0.2272=|loc|),
+# YLH: matching AR6 convention that ERFari is virtually certain non-positive (gives 5th=-0.4544, vs -0.458 target)
+# YLH: ERFaci AR7 5th/50th/95th = -1.515/-0.856/-0.254 W/m2 -> half-90%-CI avg = 0.6304 (symmetric)
+# YLH: check: ERFari + ERFaci medians = -0.2272 + -0.8561 = -1.0833 ~= ERFaer median (-1.08) -- consistent
 samples["ERFari"] = scipy.stats.norm.rvs(
-    loc=-0.3, scale=0.3 / NINETY_TO_ONESIGMA, size=10**5, random_state=70173
+    loc=-0.2272, scale=0.2272 / NINETY_TO_ONESIGMA, size=10**5, random_state=70173
 )
 samples["ERFaci"] = scipy.stats.norm.rvs(
-    loc=-1.0, scale=0.7 / NINETY_TO_ONESIGMA, size=10**5, random_state=91123
+    loc=-0.8561, scale=0.6304 / NINETY_TO_ONESIGMA, size=10**5, random_state=91123
 )
+#samples["ERFari"] = scipy.stats.norm.rvs(
+#    loc=-0.3, scale=0.3 / NINETY_TO_ONESIGMA, size=10**5, random_state=70173
+#)
+#samples["ERFaci"] = scipy.stats.norm.rvs(
+#    loc=-1.0, scale=0.7 / NINETY_TO_ONESIGMA, size=10**5, random_state=91123
+#)
 # YLH: updated total ERFaer to AR7 value (was loc=-1.3, scale=sqrt(0.7^2+0.3^2)/NINETY_TO_ONESIGMA)
-# YLH: AR7 5th/50th/95th = -1.78/-1.08/-0.44 W/m2 (2014-2023 vs 1750); avg half-90%-CI = 0.67
+# YLH: scale derived from new ERFari/ERFaci half-CIs (0.2272, 0.6304) via same formula as old AR6 code:
+# YLH: sqrt(0.6304^2 + 0.2272^2) = 0.6701 ~= AR7 Excel ERFaer half-90%-CI (0.67) -- consistent
 samples["ERFaer"] = scipy.stats.norm.rvs(
     loc=-1.08,
-    scale=0.67 / NINETY_TO_ONESIGMA,
+    scale=np.sqrt(0.6304**2 + 0.2272**2) / NINETY_TO_ONESIGMA,
     size=10**5,
     random_state=3916153,
 )
