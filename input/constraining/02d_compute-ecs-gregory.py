@@ -89,4 +89,8 @@ if plots:
         "../../plots/"
         "ecs_gregory_vs_analytical.png"
     )
+    pl.savefig(
+        "../../plots/"
+        "ecs_gregory_vs_analytical.pdf"
+    )
     pl.close()
