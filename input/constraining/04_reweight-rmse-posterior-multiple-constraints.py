@@ -65,22 +65,40 @@ co2_in = np.load(
     "../../output/prior_runs/"
     "concentration_co2_2023.npy"
 )
-ecs_in = np.load(
-    "../../output/prior_runs/ecs.npy"
-)
-tcr_in = np.load(
-    f"../../output/prior_runs/tcr.npy"
-)
+# YLH: ECS swapped from analytical (ecs.npy) to Gregory-150yr (ecs_gregory.npy,
+# from 02c/02d); positionally indexed within rmse_pass, see searchsorted below
+#ecs_in = np.load(
+#    "../../output/prior_runs/ecs.npy"
+#)
 faer_in = fari_in + faci_in
 # YLH: TCRE = temperature at year 100 of esm-flat10 run (02b), positionally
 # YLH: indexed within rmse_pass (not full 1.6M), so map valid_temp_af via searchsorted
 rmse_pass_ids = np.loadtxt(
     "../../output/posteriors/runids_rmse_pass.csv"
 ).astype(np.int64)
+# YLH: was: tcre_in_all = np.load("../../output/prior_runs/temperature_1pctCO2_1000GtC.npy")
 tcre_in_all = np.load(
     "../../output/prior_runs/temperature_esm_flat10_y100.npy"
 )
 tcre_in = tcre_in_all[np.searchsorted(rmse_pass_ids, valid_temp_af)]
+
+# YLH: TCR swapped from analytical (tcr.npy) to CMIP-consistent "1pctCO2 warming
+# at year of CO2 doubling" (year 70), from 02 (temperature_1pctCO2_y70_y140_y210.npy[0,:]);
+# positionally indexed within rmse_pass like tcre_in
+#tcr_in = np.load(
+#    f"../../output/prior_runs/tcr.npy"
+#)
+tcr_in_all = np.load(
+    "../../output/prior_runs/temperature_1pctCO2_y70_y140_y210.npy"
+)[0, :]
+tcr_in = tcr_in_all[np.searchsorted(rmse_pass_ids, valid_temp_af)]
+
+# YLH: ECS = Gregory-150yr regression from abrupt-4xCO2 (ecs_gregory.npy from
+# 02c/02d), positionally indexed within rmse_pass like tcre_in/tcr_in
+ecs_in_all = np.load(
+    "../../output/prior_runs/ecs_gregory.npy"
+)
+ecs_in = ecs_in_all[np.searchsorted(rmse_pass_ids, valid_temp_af)]
 
 
 def opt(x, q05_desired, q50_desired, q95_desired):
@@ -213,8 +231,10 @@ weights_51yr[-1] = 0.5
 
 accepted = pd.DataFrame(
     {
-        "ECS": ecs_in[valid_temp_af],
-        "TCR": tcr_in[valid_temp_af],
+        # YLH: was: "ECS": ecs_in[valid_temp_af],
+        "ECS": ecs_in,
+        # YLH: was: "TCR": tcr_in[valid_temp_af],
+        "TCR": tcr_in,
         "OHC": ohc_in[valid_temp_af] / 1e21,
         "temperature 2004-2023": np.average(
             temp_in[154:175, valid_temp_af], weights=weights_20yr, axis=0
