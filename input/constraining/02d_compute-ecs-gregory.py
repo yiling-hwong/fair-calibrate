@@ -87,10 +87,10 @@ if plots:
     fig.tight_layout()
     pl.savefig(
         "../../plots/"
-        "ecs_gregory_vs_analytical.png"
+        "post_rmse_ecs_gregory_vs_analytical.png"
     )
     pl.savefig(
         "../../plots/"
-        "ecs_gregory_vs_analytical.pdf"
+        "post_rmse_ecs_gregory_vs_analytical.pdf"
     )
     pl.close()
