@@ -438,6 +438,19 @@ weights, gofs, gofs_full = calculate_sample_weights(
 effective_samples = int(np.floor(np.sum(np.minimum(weights, 1))))
 print("Number of effective samples:", effective_samples)
 
+# YLH: diagnostic - print per-constraint goodness-of-fit (final iteration,
+# lower = better match between weighted FaIR sample and AR7 target) and
+# unweighted FaIR vs AR7-target percentiles, to identify which constraint(s)
+# are driving effective_samples below output_ensemble_size
+print("\nGoodness-of-fit by constraint (final iteration, lower is better):")
+print(gofs_full.iloc[-1])
+
+print("\nUnweighted FaIR sample vs AR7 target, percentiles [5, 50, 95]:")
+for constraint in ar_distributions:
+    fair_pct = np.percentile(accepted[constraint], (5, 50, 95))
+    target_pct = np.percentile(ar_distributions[constraint]["values"], (5, 50, 95))
+    print(f"{constraint:25s} FaIR={fair_pct}  AR7 target={target_pct}")
+
 assert effective_samples >= output_ensemble_size
 
 # Use numpy.random.choice because pandas has broken itself again
