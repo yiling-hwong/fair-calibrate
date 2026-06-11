@@ -72,14 +72,13 @@ tcr_in = np.load(
     f"../../output/prior_runs/tcr.npy"
 )
 faer_in = fari_in + faci_in
-# YLH: TO-DO run esm-flat10 to generate priors
-# YLH: load TCRE — temperature_1pctCO2_1000GtC.npy is positionally indexed within
-# YLH: rmse_pass (not full 1.6M), so need to map valid_temp_af via searchsorted
+# YLH: TCRE = temperature at year 100 of esm-flat10 run (02b), positionally
+# YLH: indexed within rmse_pass (not full 1.6M), so map valid_temp_af via searchsorted
 rmse_pass_ids = np.loadtxt(
     "../../output/posteriors/runids_rmse_pass.csv"
 ).astype(np.int64)
 tcre_in_all = np.load(
-    "../../output/prior_runs/temperature_1pctCO2_1000GtC.npy"
+    "../../output/prior_runs/temperature_esm_flat10_y100.npy"
 )
 tcre_in = tcre_in_all[np.searchsorted(rmse_pass_ids, valid_temp_af)]
 
@@ -183,7 +182,6 @@ samples["CO2 concentration"] = scipy.stats.norm.rvs(
 #)
 # YLH: added TCRE as active constraint
 # YLH: AR7 5th/50th/95th = 1/1.65/2.3 K (symmetric) -> half-90%-CI = 0.65 K
-# YLH: TO-DO: need to run esm-flat10
 samples["TCRE"] = scipy.stats.norm.rvs(
     loc=1.65, scale=0.65 / NINETY_TO_ONESIGMA, size=10**5, random_state=63916
 )
