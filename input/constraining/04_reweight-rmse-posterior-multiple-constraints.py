@@ -49,9 +49,15 @@ temp_in = np.load(
     "../../output/prior_runs/"
     "temperature_1850-2024.npy"
 )
+# YLH: EEI reference period changed from 2020-1971 to 2023-1960; filename renamed
+# YLH: accordingly in sampling script 10 (parallel.py)
+#ohc_in = np.load(
+#    "../../output/prior_runs/"
+#    "ocean_heat_content_2020_minus_1971.npy"
+#)
 ohc_in = np.load(
     "../../output/prior_runs/"
-    "ocean_heat_content_2020_minus_1971.npy"
+    "ocean_heat_content_2023_minus_1960.npy"
 )
 fari_in = np.load(
     "../../output/prior_runs/"
@@ -136,12 +142,19 @@ samples["TCR"] = scipy.stats.norm.rvs(
 # looking at new 2024 data from Matt Palmer, it seems unchanged from 1971-2020.
 # YLH: updated OHC 2020-1971 constraint to AR7 values (was loc=465.3, scale=108.5; von Schuckmann et al. 2023)
 # YLH: AR7 5th/50th/95th = 278/380/482 ZJ -> half-90%-CI = 102 ZJ (symmetric)
-samples["OHC"] = scipy.stats.norm.rvs(
-    loc=380, scale=102 / NINETY_TO_ONESIGMA, size=10**5, random_state=43178
-)
+# YLH: superseded below by EEI 1960-2023 update (Ch2, Karina & Lijing, 12.06.2026)
+#samples["OHC"] = scipy.stats.norm.rvs(
+#    loc=380, scale=102 / NINETY_TO_ONESIGMA, size=10**5, random_state=43178
+#)
 #samples["OHC"] = scipy.stats.norm.rvs(
 #    loc=465.3, scale=108.5 / NINETY_TO_ONESIGMA, size=10**5, random_state=43178
 #)
+# YLH: EEI reference period changed from 2020-1971 to 2023-1960; values updated to
+# YLH: AR7 (Ch2, Karina & Lijing, 12.06.2026; Calibration targets Excel "EEI" row)
+# YLH: AR7 5th/50th/95th = 416/491/566 ZJ -> half-90%-CI = 75 ZJ (symmetric)
+samples["OHC"] = scipy.stats.norm.rvs(
+    loc=491, scale=75 / NINETY_TO_ONESIGMA, size=10**5, random_state=43178
+)
 samples["temperature 2004-2023"] = scipy.stats.skewnorm.rvs(
     gsat_params[0],
     loc=gsat_params[1],

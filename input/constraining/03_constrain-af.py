@@ -36,10 +36,13 @@ af_out = af_in[:, ~mask]
 print(np.min(af_out, axis=1))
 
 print("Passing RMSE & AF constraint:", len(valid_temp_af))
-os.makedirs(
-    "../../output/fair-{fair_v}/v{cal_v}/{constraint_set}/posteriors",
-    exist_ok=True,
-)
+# YLH: dead/broken code - missing f-string prefix means {fair_v}/{cal_v}/{constraint_set}
+# were taken literally, creating a bogus "fair-{fair_v}" dir. Also redundant: this dir
+# is never written to, and "../../output/posteriors" already exists from script 01.
+# os.makedirs(
+#     "../../output/fair-{fair_v}/v{cal_v}/{constraint_set}/posteriors",
+#     exist_ok=True,
+# )
 np.savetxt(
     "../../output/posteriors/"
     "runids_rmse_af_pass.csv",
