@@ -279,8 +279,11 @@ def run_fair(cfg):
 
     return (
         f.temperature[100:, 0, :, 0],
-        f.ocean_heat_content_change[270:272, 0, :].mean(axis=0)
-        - f.ocean_heat_content_change[221:223, 0, :].mean(axis=0),
+        # YLH: change EEI reference period from 2020-1971 to 2023-1960
+        # f.ocean_heat_content_change[270:272, 0, :].mean(axis=0)
+        # - f.ocean_heat_content_change[221:223, 0, :].mean(axis=0),
+        f.ocean_heat_content_change[273:275, 0, :].mean(axis=0)
+        - f.ocean_heat_content_change[210:212, 0, :].mean(axis=0),
         f.concentration[273:275, 0, :, 2].mean(axis=0),
         np.average(
             # YLH: change aerosol forcing reference year from 2005-2014 to 2014-2023

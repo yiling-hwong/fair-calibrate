@@ -239,11 +239,18 @@ if __name__ == "__main__":
         temp_out,
         allow_pickle=True,
     )
-    # one question is whether we expect the non-ocean parts of the EEI to go beyond 2020
-    # currently stuck in 2020 for this
+    # YLH: change EEI reference period from 2020-1971 to 2023-1960
+    # # one question is whether we expect the non-ocean parts of the EEI to go beyond 2020
+    # # currently stuck in 2020 for this
+    # np.save(
+    #     "../../output/prior_runs/"
+    #     "ocean_heat_content_2020_minus_1971.npy",
+    #     ohc_out,
+    #     allow_pickle=True,
+    # )
     np.save(
         "../../output/prior_runs/"
-        "ocean_heat_content_2020_minus_1971.npy",
+        "ocean_heat_content_2023_minus_1960.npy",
         ohc_out,
         allow_pickle=True,
     )
