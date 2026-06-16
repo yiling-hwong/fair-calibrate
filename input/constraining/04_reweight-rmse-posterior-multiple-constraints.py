@@ -676,7 +676,7 @@ if plots:
         lw=2,
     )
     ax[1, 0].set_xlim(start, stop)
-    ax[1, 0].set_ylim(0, 2.5)
+    ax[1, 0].set_ylim(0, 3.5)  # YLH: increased from 2.5; AR7 ERFari target peak ≈2.89
     ax[1, 0].set_title("Aerosol ERFari")
     ax[1, 0].set_yticklabels([])
     ax[1, 0].set_xlabel("W m$^{-2}$, 2014-2023 minus 1750")
@@ -713,7 +713,7 @@ if plots:
         lw=2,
     )
     ax[1, 1].set_xlim(start, stop)
-    ax[1, 1].set_ylim(0, 1.1)
+    ax[1, 1].set_ylim(0, 1.5)  # YLH: increased from 1.1; marginal for target (peak≈1.04), posterior will be tighter
     ax[1, 1].set_title("Aerosol ERFaci")
     ax[1, 1].set_yticklabels([])
     ax[1, 1].set_xlabel("W m$^{-2}$, 2014-2023 minus 1750")
@@ -749,7 +749,7 @@ if plots:
         lw=2,
     )
     ax[1, 2].set_xlim(start, stop)
-    ax[1, 2].set_ylim(0, 1.1)
+    ax[1, 2].set_ylim(0, 1.5)  # YLH: increased from 1.1; posterior will be tighter than target (peak≈0.98)
     ax[1, 2].set_title("Aerosol ERF")
     ax[1, 2].set_yticklabels([])
     ax[1, 2].set_xlabel("W m$^{-2}$, 2014-2023 minus 1750")
@@ -785,7 +785,7 @@ if plots:
         lw=2,
     )
     ax[2, 0].set_xlim(start, stop)
-    ax[2, 0].set_ylim(0, 1.0)
+    ax[2, 0].set_ylim(0, 2.5)  # YLH: increased from 1.0; AR7 CO2 target peak ≈1.64; extra headroom for narrow posterior
     ax[2, 0].set_ylabel("Probability density")
     ax[2, 0].set_title("CO$_2$ concentration")
     ax[2, 0].set_yticklabels([])
@@ -822,10 +822,10 @@ if plots:
         lw=2,
     )
     ax[2, 1].set_xlim(start, stop)
-    ax[2, 1].set_ylim(0, 0.007)
+    ax[2, 1].set_ylim(0, 0.012)  # YLH: increased from 0.007; AR7 EEI target tighter (σ≈45.6 ZJ) → peak density ≈0.0088
     ax[2, 1].set_title("Ocean heat content change")
     ax[2, 1].set_yticklabels([])
-    ax[2, 1].set_xlabel("ZJ, 2020 minus 1971")
+    ax[2, 1].set_xlabel("ZJ, 2023 minus 1960")  # YLH: updated from "2020 minus 1971"
 
     ax[2, 2].axis("off")
     legend_lines = [
