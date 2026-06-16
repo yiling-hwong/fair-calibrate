@@ -76,16 +76,9 @@ co2_in = np.load(
 #ecs_in = np.load(
 #    "../../output/prior_runs/ecs.npy"
 #)
-# YLH: reverted to analytical ecs.npy (2026-06-16); full 2M prior, direct indexing
-# YLH: Gregory approach commented out below (lines ~107-121)
-ecs_in = np.load(
-    "../../output/prior_runs/ecs.npy"
-)
-ecs_prior_all = ecs_in          # YLH: broadest available prior for this source (full 2M); update here when switching source
-
 faer_in = fari_in + faci_in
 # YLH: TCRE = temperature at year 100 of esm-flat10 run (02b), positionally
-# YLH: indexed within rmse_pass (not full 2M), so map valid_temp_af via searchsorted
+# YLH: indexed within rmse_pass (not full 1.6M), so map valid_temp_af via searchsorted
 rmse_pass_ids = np.loadtxt(
     "../../output/posteriors/runids_rmse_pass.csv"
 ).astype(np.int64)
@@ -94,7 +87,6 @@ tcre_in_all = np.load(
     "../../output/prior_runs/temperature_esm_flat10_y100.npy"
 )
 tcre_in = tcre_in_all[np.searchsorted(rmse_pass_ids, valid_temp_af)]
-tcre_prior_all = tcre_in_all    # YLH: broadest available prior for this source (rmse_pass); update here when switching source
 
 # YLH: TCR swapped from analytical (tcr.npy) to CMIP-consistent "1pctCO2 warming
 # at year of CO2 doubling" (year 70), from 02 (temperature_1pctCO2_y70_y140_y210.npy[0,:]);
@@ -102,21 +94,17 @@ tcre_prior_all = tcre_in_all    # YLH: broadest available prior for this source 
 #tcr_in = np.load(
 #    f"../../output/prior_runs/tcr.npy"
 #)
-#tcr_prior_all = tcr_in         # YLH: broadest available prior if using analytical tcr.npy (full 2M)
 tcr_in_all = np.load(
     "../../output/prior_runs/temperature_1pctCO2_y70_y140_y210.npy"
 )[0, :]
 tcr_in = tcr_in_all[np.searchsorted(rmse_pass_ids, valid_temp_af)]
-tcr_prior_all = tcr_in_all      # YLH: broadest available prior for this source (rmse_pass); update here when switching source
 
 # YLH: ECS = Gregory-150yr regression from abrupt-4xCO2 (ecs_gregory.npy from
 # 02c/02d), positionally indexed within rmse_pass like tcre_in/tcr_in
-# YLH: commented out 2026-06-16 — reverted to analytical ecs.npy above
-#ecs_in_all = np.load(
-#    "../../output/prior_runs/ecs_gregory.npy"
-#)
-#ecs_in = ecs_in_all[np.searchsorted(rmse_pass_ids, valid_temp_af)]
-#ecs_prior_all = ecs_in_all     # YLH: broadest available prior if using Gregory (rmse_pass)
+ecs_in_all = np.load(
+    "../../output/prior_runs/ecs_gregory.npy"
+)
+ecs_in = ecs_in_all[np.searchsorted(rmse_pass_ids, valid_temp_af)]
 
 
 def opt(x, q05_desired, q50_desired, q95_desired):
@@ -130,9 +118,8 @@ def opt(x, q05_desired, q50_desired, q95_desired):
 # YLH: updated ECS constraint to prelim. Vince Cooper AR7 values (was 5th/50th/95th = 2/3/5 K)
 # YLH: reverted to AR6 values (2/3/5 K) — AR7 value (2/3.5/6 K) combined with Gregory ECS
 # YLH: gives systematic underestimate vs target (FaIR Gregory 95th ~4.7 K < target 6.0 K)
-# YLH: now using analytical ECS (2026-06-16) → AR7 [2, 3.5, 6] K is achievable
-#ecs_params = scipy.optimize.root(opt, [1, 1, 1], args=(2, 3, 5)).x  # AR6, used with Gregory
-ecs_params = scipy.optimize.root(opt, [1, 1, 1], args=(2, 3.5, 6)).x  # YLH: AR7 5/50/95 K
+#ecs_params = scipy.optimize.root(opt, [1, 1, 1], args=(2, 3.5, 6)).x
+ecs_params = scipy.optimize.root(opt, [1, 1, 1], args=(2, 3, 5)).x
 
 
 # Indicators 2023
@@ -148,14 +135,8 @@ samples["ECS"] = scipy.stats.skewnorm.rvs(
     size=10**5,
     random_state=91603,
 )
-# YLH: was symmetric normal 5/50/95=1.2/1.8/2.4 K (scale=0.6/σ)
-#samples["TCR"] = scipy.stats.norm.rvs(
-#    loc=1.8, scale=0.6 / NINETY_TO_ONESIGMA, size=10**5, random_state=18196
-#)
-# YLH: updated to [1.2, 1.8, 2.6] K (slightly asymmetric → skew-normal); 2026-06-16
-tcr_params = scipy.optimize.root(opt, [1, 1, 1], args=(1.2, 1.8, 2.6)).x
-samples["TCR"] = scipy.stats.skewnorm.rvs(
-    tcr_params[0], loc=tcr_params[1], scale=tcr_params[2], size=10**5, random_state=18196
+samples["TCR"] = scipy.stats.norm.rvs(
+    loc=1.8, scale=0.6 / NINETY_TO_ONESIGMA, size=10**5, random_state=18196
 )
 # note fair produces, and we here report, total earth energy uptake, not just ocean
 # this value from IGCC 2024. Use new uncertainties for ocean, assume same uncertainties
@@ -235,14 +216,9 @@ samples["CO2 concentration"] = scipy.stats.norm.rvs(
     loc=419.36, scale=0.4, size=10**5, random_state=81693
 )
 # YLH: added TCRE as active constraint
-# YLH: was symmetric normal 5/50/95=1/1.65/2.3 K (scale=0.65/σ)
-#samples["TCRE"] = scipy.stats.norm.rvs(
-#    loc=1.65, scale=0.65 / NINETY_TO_ONESIGMA, size=10**5, random_state=63916
-#)
-# YLH: updated to [1.0, 1.65, 2.5] K (slightly asymmetric → skew-normal); 2026-06-16
-tcre_params = scipy.optimize.root(opt, [1, 1, 1], args=(1.0, 1.65, 2.5)).x
-samples["TCRE"] = scipy.stats.skewnorm.rvs(
-    tcre_params[0], loc=tcre_params[1], scale=tcre_params[2], size=10**5, random_state=63916
+# YLH: AR7 5th/50th/95th = 1/1.65/2.3 K (symmetric) -> half-90%-CI = 0.65 K
+samples["TCRE"] = scipy.stats.norm.rvs(
+    loc=1.65, scale=0.65 / NINETY_TO_ONESIGMA, size=10**5, random_state=63916
 )
 
 ar_distributions = {}
@@ -272,9 +248,8 @@ weights_51yr[-1] = 0.5
 
 accepted = pd.DataFrame(
     {
-        # YLH: analytical ecs.npy is full 2M prior → direct indexing by valid_temp_af
-        # YLH: was ecs_in (Gregory already searchsorted; reverted to analytical 2026-06-16)
-        "ECS": ecs_in[valid_temp_af],
+        # YLH: was: "ECS": ecs_in[valid_temp_af],
+        "ECS": ecs_in,
         # YLH: was: "TCR": tcr_in[valid_temp_af],
         "TCR": tcr_in,
         "OHC": ohc_in[valid_temp_af] / 1e21,
@@ -504,20 +479,19 @@ chosen = np.random.choice(accepted.index, size=841, replace=False, p=weights/np.
 draws = accepted.loc[chosen]
 
 if plots:
-    # YLH: *_prior_all defined at data-loading point (above) — always the broadest available
-    # YLH: for each source. Switching ECS/TCR/TCRE source only requires updating *_prior_all there.
     target_ecs = scipy.stats.gaussian_kde(samples["ECS"])
-    prior_ecs = scipy.stats.gaussian_kde(ecs_prior_all)
-    post1_ecs = scipy.stats.gaussian_kde(ecs_in[valid_temp_af])
+    prior_ecs = scipy.stats.gaussian_kde(ecs_in_all)   # YLH: was ecs_in (already filtered); use ecs_in_all for rmse_pass prior
+    post1_ecs = scipy.stats.gaussian_kde(ecs_in)       # YLH: was ecs_in[valid_temp_af]; ecs_in already indexed to valid_temp_af
     post2_ecs = scipy.stats.gaussian_kde(draws["ECS"])
 
     target_tcr = scipy.stats.gaussian_kde(samples["TCR"])
-    prior_tcr = scipy.stats.gaussian_kde(tcr_prior_all)
-    post1_tcr = scipy.stats.gaussian_kde(tcr_in)
+    prior_tcr = scipy.stats.gaussian_kde(tcr_in_all)   # YLH: was tcr_in (already filtered); use tcr_in_all for rmse_pass prior
+    post1_tcr = scipy.stats.gaussian_kde(tcr_in)       # YLH: was tcr_in[valid_temp_af]; tcr_in already indexed to valid_temp_af
     post2_tcr = scipy.stats.gaussian_kde(draws["TCR"])
 
+    # YLH: TCRE KDEs — tcre_in_all/tcre_in already positionally indexed within rmse_pass
     target_tcre = scipy.stats.gaussian_kde(samples["TCRE"])
-    prior_tcre = scipy.stats.gaussian_kde(tcre_prior_all)
+    prior_tcre = scipy.stats.gaussian_kde(tcre_in_all)
     post1_tcre = scipy.stats.gaussian_kde(tcre_in)
     post2_tcre = scipy.stats.gaussian_kde(draws["TCRE"])
 
