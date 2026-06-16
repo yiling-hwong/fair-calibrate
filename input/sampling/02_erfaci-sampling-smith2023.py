@@ -257,9 +257,11 @@ oc = df_emis_obs.loc[df_emis_obs["variable"] == "OC", '1750':'2023'].values.sque
 beta = np.zeros(samples)
 # erfaci = np.zeros((273, samples))
 for i in tqdm(range(samples), desc="aci samples", disable=1 - progress):
-    ts2010 = np.mean(
+    # YLH: updated reference period from 2005-2014 (indices 255:265) to 2014-2023
+    # YLH: (indices 264:274) to match the aerosol ERF period in parallel.py
+    ts_aer_ref = np.mean(
         aci_log_nocorrect(
-            [so2[255:265], bc[255:265], oc[255:265]],
+            [so2[264:274], bc[264:274], oc[264:274]],
             1,
             np.exp(aci_sample[0, i]),
             np.exp(aci_sample[1, i]),
@@ -273,7 +275,7 @@ for i in tqdm(range(samples), desc="aci samples", disable=1 - progress):
         np.exp(aci_sample[1, i]),
         np.exp(aci_sample[2, i]),
     )
-    beta[i] = erfaci_sample[i] / (ts2010 - ts1750)
+    beta[i] = erfaci_sample[i] / (ts_aer_ref - ts1750)
 
 df = pd.DataFrame(
     {

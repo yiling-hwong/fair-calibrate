@@ -271,12 +271,14 @@ erfari_best = (
     .sum(axis=1)
 )
 
-# we need to map the 2005-2014 value using new emissions to -0.3 +/- 0.3 which is the
-# IPCC AR6 assessment
+# we need to map the 2014-2023 value using new emissions to the AR7 assessment
+# YLH: updated period from 2005-2014 to 2014-2023 (match parallel.py aerosol period)
+# YLH: updated target from AR6 (-0.3 +/- 0.3) to AR7 (-0.2272 +/- 0.2272)
+# YLH: -0.22 (old AR6 normalization reference) updated to -0.2272 (AR7 best estimate)
 NINETY_TO_ONESIGMA = scipy.stats.norm.ppf(0.95)
-best_scale = -0.3 / erfari_best.loc[2005:2014].mean()
-unc_scale = 0.3 / (
-    (erfari_best.loc[2005:2014].mean() / -0.22)
+best_scale = -0.2272 / erfari_best.loc[2014:2023].mean()
+unc_scale = 0.2272 / (
+    (erfari_best.loc[2014:2023].mean() / -0.2272)
     * np.sqrt((erfari_emitted_std**2).sum())
     * NINETY_TO_ONESIGMA
 )

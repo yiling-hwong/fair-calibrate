@@ -679,7 +679,7 @@ if plots:
     ax[1, 0].set_ylim(0, 2.5)
     ax[1, 0].set_title("Aerosol ERFari")
     ax[1, 0].set_yticklabels([])
-    ax[1, 0].set_xlabel("W m$^{-2}$, 2005-2014 minus 1750")
+    ax[1, 0].set_xlabel("W m$^{-2}$, 2014-2023 minus 1750")
     ax[1, 0].set_ylabel("Probability density")
 
     start = -2.25
@@ -716,7 +716,7 @@ if plots:
     ax[1, 1].set_ylim(0, 1.1)
     ax[1, 1].set_title("Aerosol ERFaci")
     ax[1, 1].set_yticklabels([])
-    ax[1, 1].set_xlabel("W m$^{-2}$, 2005-2014 minus 1750")
+    ax[1, 1].set_xlabel("W m$^{-2}$, 2014-2023 minus 1750")
 
     start = -3
     stop = 0.4
@@ -752,7 +752,7 @@ if plots:
     ax[1, 2].set_ylim(0, 1.1)
     ax[1, 2].set_title("Aerosol ERF")
     ax[1, 2].set_yticklabels([])
-    ax[1, 2].set_xlabel("W m$^{-2}$, 2005-2014 minus 1750")
+    ax[1, 2].set_xlabel("W m$^{-2}$, 2014-2023 minus 1750")
 
     start = 417
     stop = 425
@@ -862,7 +862,7 @@ if plots:
     # Plots 3
     pl.scatter(draws["TCR"], draws["ERFaci"] + draws["ERFari"])
     pl.xlabel("TCR, °C")
-    pl.ylabel("Aerosol ERF, W m$^{-2}$, 2005-2014 minus 1750")
+    pl.ylabel("Aerosol ERF, W m$^{-2}$, 2014-2023 minus 1750")
     pl.tight_layout()
     pl.savefig(
         "../../plots/"
@@ -966,26 +966,26 @@ print(
     np.percentile(draws["temperature 2004-2023"], (5, 50, 95)),
 )
 print(
-    "Aerosol ERFari 2005-2014 rel. 1750:",
+    "Aerosol ERFari 2014-2023 rel. 1750:",
     np.percentile(draws["ERFari"], (5, 50, 95)),
 )
 print(
-    "Aerosol ERFaci 2005-2014 rel. 1750:",
+    "Aerosol ERFaci 2014-2023 rel. 1750:",
     np.percentile(draws["ERFaci"], (5, 50, 95)),
 )
 print(
-    "Aerosol ERF 2005-2014 rel. 1750:",
+    "Aerosol ERF 2014-2023 rel. 1750:",
     np.percentile(draws["ERFaci"] + draws["ERFari"], (5, 50, 95)),
 )
-# YLH: ERFaer consistency check — no longer a constraint, but posterior should
-# still be close to AR7 target since ERFari+ERFaci are both constrained
+
 print(
     "ERFaer posterior  [5, 50, 95]:", np.percentile(draws["ERFaer"], (5, 50, 95))
 )
 print(
     "ERFaer AR7 target [5, 50, 95]:", np.percentile(samples["ERFaer"], (5, 50, 95))
 )
-print("OHC change 2020 rel. 1971:", np.percentile(draws["OHC"], (5, 50, 95)))
+print("OHC/EEI change 2023 rel. 1960:", np.percentile(draws["OHC"], (5, 50, 95)))
+print("TCRE:", np.percentile(draws["TCRE"], (5, 50, 95)))
 
 print("*likely range")
 
