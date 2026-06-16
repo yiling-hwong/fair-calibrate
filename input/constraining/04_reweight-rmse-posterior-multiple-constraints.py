@@ -225,7 +225,10 @@ for constraint in [
     "temperature 2004-2023",
     "ERFari",
     "ERFaci",
-    "ERFaer",
+    # YLH: ERFaer removed — it equals ERFari+ERFaci by construction (line 79),
+    # so constraining all three simultaneously creates conflicting weight demands
+    # (triple-counting); ERFari+ERFaci together fully determine ERFaer.
+    # "ERFaer",
     "CO2 concentration",
     "TCRE",
 ]:
