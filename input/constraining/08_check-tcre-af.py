@@ -26,9 +26,16 @@ temp = np.load(
     f"../../output/"
     "prior_runs/temperature_1pctCO2_y70_y140_y210.npy"
 )
+# YLH: old TCRE proxy from 1pctCO2 run (kept for comparison); AR7 uses esm-flat10 below
 temp1000 = np.load(
     f"../../output/"
     "prior_runs/temperature_1pctCO2_1000GtC.npy"
+)
+# YLH: AR7 TCRE source: temperature at year 100 of esm-flat10 run (02b), cumulative
+# YLH: emissions = 1000 GtC at year 100; indexed within rmse_pass (same as pass1 below)
+temp_flat10 = np.load(
+    "../../output/"
+    "prior_runs/temperature_esm_flat10_y100.npy"
 )
 pass1 = np.loadtxt(
     f"../../output/"
@@ -50,7 +57,10 @@ idx = np.isin(pass1, pass2).nonzero()[0]
 print("temperature 2xCO2:", np.percentile(temp[0, idx], (5, 50, 95)))
 print("temperature 4xCO2:", np.percentile(temp[1, idx], (5, 50, 95)))
 print("temperature 8xCO2:", np.percentile(temp[2, idx], (5, 50, 95)))
-print("TCRE @1000GtC:", np.percentile(temp1000[idx], (5, 50, 95)))
+# YLH: old 1pctCO2 proxy kept for reference
+print("TCRE @1000GtC (1pctCO2 proxy):", np.percentile(temp1000[idx], (5, 50, 95)))
+# YLH: AR7 constraint source — esm-flat10 y100; idx is positional within rmse_pass = pass1
+print("TCRE @1000GtC (esm-flat10, AR7):", np.percentile(temp_flat10[idx], (5, 50, 95)))
 print("AF 2xCO2*:", np.percentile(af[0, idx], (16, 50, 84)))
 print("AF 4xCO2*:", np.percentile(af[1, idx], (16, 50, 84)))
 print("AF 8xCO2*:", np.percentile(af[2, idx], (16, 50, 84)))
