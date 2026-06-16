@@ -74,7 +74,7 @@ if plots:
 
     os.makedirs("../../plots/", exist_ok=True)
     fig, ax = pl.subplots()
-    ax.scatter(ecs_analytical, ecs_gregory, s=3, alpha=0.3)
+    ax.scatter(ecs_analytical, ecs_gregory, s=3, alpha=0.3, rasterized=True)
     lims = (
         0,
         max(np.nanmax(ecs_analytical), np.nanmax(ecs_gregory)),
