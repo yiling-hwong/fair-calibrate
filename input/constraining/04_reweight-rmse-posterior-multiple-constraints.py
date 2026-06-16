@@ -116,8 +116,10 @@ def opt(x, q05_desired, q50_desired, q95_desired):
 
 
 # YLH: updated ECS constraint to prelim. Vince Cooper AR7 values (was 5th/50th/95th = 2/3/5 K)
-ecs_params = scipy.optimize.root(opt, [1, 1, 1], args=(2, 3.5, 6)).x
-#ecs_params = scipy.optimize.root(opt, [1, 1, 1], args=(2, 3, 5)).x
+# YLH: reverted to AR6 values (2/3/5 K) — AR7 value (2/3.5/6 K) combined with Gregory ECS
+# YLH: gives systematic underestimate vs target (FaIR Gregory 95th ~4.7 K < target 6.0 K)
+#ecs_params = scipy.optimize.root(opt, [1, 1, 1], args=(2, 3.5, 6)).x
+ecs_params = scipy.optimize.root(opt, [1, 1, 1], args=(2, 3, 5)).x
 
 
 # Indicators 2023
@@ -205,12 +207,14 @@ samples["ERFaer"] = scipy.stats.norm.rvs(
 # IGCC 2024, using 2023 concentration
 # YLH: updated CO2 2023 uncertainty to AR7 values (was scale=0.4; NOAA GML)
 # YLH: AR7 5th/50th/95th = 419.19/419.36/419.53 ppm -> half-90%-CI = 0.17 ppm
-samples["CO2 concentration"] = scipy.stats.norm.rvs(
-    loc=419.36, scale=0.17 / NINETY_TO_ONESIGMA, size=10**5, random_state=81693
-)
+# YLH: reverted to old scale=0.4 — AR7 scale (0.17/sigma ~ 0.10 ppm) is ~150x tighter
+# YLH: than the FaIR prior spread, killing effective samples
 #samples["CO2 concentration"] = scipy.stats.norm.rvs(
-#    loc=419.36, scale=0.4, size=10**5, random_state=81693
+#    loc=419.36, scale=0.17 / NINETY_TO_ONESIGMA, size=10**5, random_state=81693
 #)
+samples["CO2 concentration"] = scipy.stats.norm.rvs(
+    loc=419.36, scale=0.4, size=10**5, random_state=81693
+)
 # YLH: added TCRE as active constraint
 # YLH: AR7 5th/50th/95th = 1/1.65/2.3 K (symmetric) -> half-90%-CI = 0.65 K
 samples["TCRE"] = scipy.stats.norm.rvs(
