@@ -483,13 +483,13 @@ draws = accepted.loc[chosen]
 
 if plots:
     target_ecs = scipy.stats.gaussian_kde(samples["ECS"])
-    prior_ecs = scipy.stats.gaussian_kde(ecs_in)
-    post1_ecs = scipy.stats.gaussian_kde(ecs_in[valid_temp_af])
+    prior_ecs = scipy.stats.gaussian_kde(ecs_in_all)   # YLH: was ecs_in (already filtered); use ecs_in_all for rmse_pass prior
+    post1_ecs = scipy.stats.gaussian_kde(ecs_in)       # YLH: was ecs_in[valid_temp_af]; ecs_in already indexed to valid_temp_af
     post2_ecs = scipy.stats.gaussian_kde(draws["ECS"])
 
     target_tcr = scipy.stats.gaussian_kde(samples["TCR"])
-    prior_tcr = scipy.stats.gaussian_kde(tcr_in)
-    post1_tcr = scipy.stats.gaussian_kde(tcr_in[valid_temp_af])
+    prior_tcr = scipy.stats.gaussian_kde(tcr_in_all)   # YLH: was tcr_in (already filtered); use tcr_in_all for rmse_pass prior
+    post1_tcr = scipy.stats.gaussian_kde(tcr_in)       # YLH: was tcr_in[valid_temp_af]; tcr_in already indexed to valid_temp_af
     post2_tcr = scipy.stats.gaussian_kde(draws["TCR"])
 
     target_temp = scipy.stats.gaussian_kde(samples["temperature 2004-2023"])
