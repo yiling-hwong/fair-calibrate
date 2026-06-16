@@ -977,6 +977,14 @@ print(
     "Aerosol ERF 2005-2014 rel. 1750:",
     np.percentile(draws["ERFaci"] + draws["ERFari"], (5, 50, 95)),
 )
+# YLH: ERFaer consistency check — no longer a constraint, but posterior should
+# still be close to AR7 target since ERFari+ERFaci are both constrained
+print(
+    "ERFaer posterior  [5, 50, 95]:", np.percentile(draws["ERFaer"], (5, 50, 95))
+)
+print(
+    "ERFaer AR7 target [5, 50, 95]:", np.percentile(samples["ERFaer"], (5, 50, 95))
+)
 print("OHC change 2020 rel. 1971:", np.percentile(draws["OHC"], (5, 50, 95)))
 
 print("*likely range")
