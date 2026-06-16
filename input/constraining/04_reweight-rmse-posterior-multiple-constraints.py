@@ -229,10 +229,10 @@ for constraint in [
     "temperature 2004-2023",
     "ERFari",
     "ERFaci",
-    # YLH: ERFaer removed — it equals ERFari+ERFaci by construction (line 79),
-    # so constraining all three simultaneously creates conflicting weight demands
-    # (triple-counting); ERFari+ERFaci together fully determine ERFaer.
-    # "ERFaer",
+    # YLH: ERFaer re-enabled — removed earlier due to GOF=1953 with effective_samples=508,
+    # but now have headroom (1775 effective samples vs 841 needed) so can absorb the
+    # triple-counting tension between ERFari, ERFaci, ERFaer.
+    "ERFaer",
     "CO2 concentration",
     "TCRE",
 ]:
