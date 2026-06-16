@@ -72,7 +72,7 @@ if __name__ == "__main__":
         ].values
         config[ibatch]["forcing_4co2"] = df_cr.loc[
             rmse_pass[batch_start:batch_end], "F_4xCO2"
-        ]
+        ].values
         config[ibatch]["iirf_0"] = df_cc.loc[
             rmse_pass[batch_start:batch_end], "r0"
         ].values.squeeze()

@@ -489,6 +489,12 @@ if plots:
     post1_tcr = scipy.stats.gaussian_kde(tcr_in)       # YLH: was tcr_in[valid_temp_af]; tcr_in already indexed to valid_temp_af
     post2_tcr = scipy.stats.gaussian_kde(draws["TCR"])
 
+    # YLH: TCRE KDEs — tcre_in_all/tcre_in already positionally indexed within rmse_pass
+    target_tcre = scipy.stats.gaussian_kde(samples["TCRE"])
+    prior_tcre = scipy.stats.gaussian_kde(tcre_in_all)
+    post1_tcre = scipy.stats.gaussian_kde(tcre_in)
+    post2_tcre = scipy.stats.gaussian_kde(draws["TCRE"])
+
     target_temp = scipy.stats.gaussian_kde(samples["temperature 2004-2023"])
     prior_temp = scipy.stats.gaussian_kde(
         np.average(temp_in[154:175, :], weights=weights_20yr, axis=0)
@@ -531,8 +537,8 @@ if plots:
         "../../plots/", exist_ok=True
     )
 
-    # Plots 1
-    fig, ax = pl.subplots(3, 3, figsize=(18 / 2.54, 18 / 2.54))
+    # Plots 1 — YLH: expanded from 3×3 to 3×4 to accommodate TCRE panel next to TCR
+    fig, ax = pl.subplots(3, 4, figsize=(24 / 2.54, 18 / 2.54))
     start = 0
     stop = 8
     ax[0, 0].plot(
@@ -606,41 +612,79 @@ if plots:
     ax[0, 1].set_yticklabels([])
     ax[0, 1].set_xlabel("°C")
 
-    start = 0.65
-    stop = 1.45
+    # YLH: TCRE panel added at ax[0,2]; target Normal(1.65, 0.65/σ), 5/50/95=1/1.65/2.3 K
+    start = 0
+    stop = 3.5
     ax[0, 2].plot(
         np.linspace(start, stop, 1000),
-        target_temp(np.linspace(start, stop, 1000)),
-        color=colors["target"],
-        label="Target",
-        lw=2,
-    )
-    ax[0, 2].plot(
-        np.linspace(start, stop, 1000),
-        prior_temp(np.linspace(start, stop, 1000)),
+        prior_tcre(np.linspace(start, stop, 1000)),
         color=colors["prior"],
         label="Prior",
         lw=2,
     )
     ax[0, 2].plot(
         np.linspace(start, stop, 1000),
-        post1_temp(np.linspace(start, stop, 1000)),
+        post1_tcre(np.linspace(start, stop, 1000)),
         color=colors["post1"],
         label="Temperature RMSE",
         lw=2,
     )
     ax[0, 2].plot(
         np.linspace(start, stop, 1000),
+        post2_tcre(np.linspace(start, stop, 1000)),
+        color=colors["post2"],
+        label="All constraints",
+        lw=2,
+    )
+    ax[0, 2].plot(
+        np.linspace(start, stop, 1000),
+        target_tcre(np.linspace(start, stop, 1000)),
+        color=colors["target"],
+        label="Target",
+        lw=2,
+    )
+    ax[0, 2].set_xlim(start, stop)
+    ax[0, 2].set_ylim(0, 1.5)
+    ax[0, 2].set_title("TCRE")
+    ax[0, 2].set_yticklabels([])
+    ax[0, 2].set_xlabel("°C per 1000 GtC, esm-flat10 y100")
+
+    # YLH: Temperature anomaly shifted from ax[0,2] to ax[0,3]
+    start = 0.65
+    stop = 1.45
+    ax[0, 3].plot(
+        np.linspace(start, stop, 1000),
+        target_temp(np.linspace(start, stop, 1000)),
+        color=colors["target"],
+        label="Target",
+        lw=2,
+    )
+    ax[0, 3].plot(
+        np.linspace(start, stop, 1000),
+        prior_temp(np.linspace(start, stop, 1000)),
+        color=colors["prior"],
+        label="Prior",
+        lw=2,
+    )
+    ax[0, 3].plot(
+        np.linspace(start, stop, 1000),
+        post1_temp(np.linspace(start, stop, 1000)),
+        color=colors["post1"],
+        label="Temperature RMSE",
+        lw=2,
+    )
+    ax[0, 3].plot(
+        np.linspace(start, stop, 1000),
         post2_temp(np.linspace(start, stop, 1000)),
         color=colors["post2"],
         label="All constraints",
         lw=2,
     )
-    ax[0, 2].set_xlim(start, stop)
-    ax[0, 2].set_ylim(0, 6)
-    ax[0, 2].set_title("Temperature anomaly")
-    ax[0, 2].set_yticklabels([])
-    ax[0, 2].set_xlabel("°C, 2004-2023 minus 1850-1900")
+    ax[0, 3].set_xlim(start, stop)
+    ax[0, 3].set_ylim(0, 6)
+    ax[0, 3].set_title("Temperature anomaly")
+    ax[0, 3].set_yticklabels([])
+    ax[0, 3].set_xlabel("°C, 2004-2023 minus 1850-1900")
 
     start = -1.0
     stop = 0.4
@@ -782,7 +826,7 @@ if plots:
         lw=2,
     )
     ax[2, 0].set_xlim(start, stop)
-    ax[2, 0].set_ylim(0, 2.0)  # YLH: increased from 1.0; AR7 CO2 target peak ≈1.64; extra headroom for narrow posterior
+    ax[2, 0].set_ylim(0, 1.1)  # YLH: increased from 1.0; AR7 CO2 target peak ≈1.64; extra headroom for narrow posterior
     ax[2, 0].set_ylabel("Probability density")
     ax[2, 0].set_title("CO$_2$ concentration")
     ax[2, 0].set_yticklabels([])
@@ -824,7 +868,10 @@ if plots:
     ax[2, 1].set_yticklabels([])
     ax[2, 1].set_xlabel("ZJ, 2023 minus 1960")  # YLH: updated from "2020 minus 1971"
 
+    # YLH: spare panels in 3×4 grid turned off; legend moved to ax[2,2]
+    ax[1, 3].axis("off")
     ax[2, 2].axis("off")
+    ax[2, 3].axis("off")
     legend_lines = [
         Line2D([0], [0], color=colors["prior"], lw=2),
         Line2D([0], [0], color=colors["post1"], lw=2),
