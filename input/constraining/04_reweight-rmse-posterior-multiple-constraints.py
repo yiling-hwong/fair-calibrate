@@ -229,9 +229,6 @@ for constraint in [
     "temperature 2004-2023",
     "ERFari",
     "ERFaci",
-    # YLH: ERFaer re-enabled — removed earlier due to GOF=1953 with effective_samples=508,
-    # but now have headroom (1775 effective samples vs 841 needed) so can absorb the
-    # triple-counting tension between ERFari, ERFaci, ERFaer.
     "ERFaer",
     "CO2 concentration",
     "TCRE",
@@ -785,7 +782,7 @@ if plots:
         lw=2,
     )
     ax[2, 0].set_xlim(start, stop)
-    ax[2, 0].set_ylim(0, 2.5)  # YLH: increased from 1.0; AR7 CO2 target peak ≈1.64; extra headroom for narrow posterior
+    ax[2, 0].set_ylim(0, 2.0)  # YLH: increased from 1.0; AR7 CO2 target peak ≈1.64; extra headroom for narrow posterior
     ax[2, 0].set_ylabel("Probability density")
     ax[2, 0].set_title("CO$_2$ concentration")
     ax[2, 0].set_yticklabels([])
