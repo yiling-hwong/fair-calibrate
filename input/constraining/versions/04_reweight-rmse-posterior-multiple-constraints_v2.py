@@ -71,27 +71,29 @@ co2_in = np.load(
     "../../output/prior_runs/"
     "concentration_co2_2023.npy"
 )
-# loaded here so both Gregory ECS and TCRE can use searchsorted alignment
-rmse_pass_ids = np.loadtxt(
-    "../../output/posteriors/runids_rmse_pass.csv"
-).astype(np.int64)
-
-# YLH: analytical ecs.npy full 2M prior, direct indexing (v2 only)
+# YLH: ECS swapped from analytical (ecs.npy) to Gregory-150yr (ecs_gregory.npy,
+# from 02c/02d); positionally indexed within rmse_pass, see searchsorted below
 #ecs_in = np.load(
 #    "../../output/prior_runs/ecs.npy"
 #)
-#ecs_prior_all = ecs_in
-# YLH: Gregory-150yr from abrupt-4xCO2 (ecs_gregory.npy, 02c/02d), positionally indexed within rmse_pass
-ecs_in_all = np.load(
-    "../../output/prior_runs/ecs_gregory.npy"
+# YLH: analytical ecs.npy' full 2M prior, direct indexing
+ecs_in = np.load(
+    "../../output/prior_runs/ecs.npy"
 )
-ecs_in = ecs_in_all[np.searchsorted(rmse_pass_ids, valid_temp_af)]
-ecs_prior_all = ecs_in_all
+ecs_prior_all = ecs_in
+# YLH: ECS = Gregory-150yr regression from abrupt-4xCO2 (ecs_gregory.npy from 02c/02d), positionally indexed within rmse_pass like tcre_in/tcr_in
+#ecs_in_all = np.load(
+#    "../../output/prior_runs/ecs_gregory.npy"
+#)
+#ecs_in = ecs_in_all[np.searchsorted(rmse_pass_ids, valid_temp_af)]
+#ecs_prior_all = ecs_in_all     # YLH: broadest available prior if using Gregory (rmse_pass)
 
 faer_in = fari_in + faci_in
 # YLH: TCRE = temperature at year 100 of esm-flat10 run (02b), positionally
 # YLH: indexed within rmse_pass (not full 2M), so map valid_temp_af via searchsorted
-# (rmse_pass_ids loaded above)
+rmse_pass_ids = np.loadtxt(
+    "../../output/posteriors/runids_rmse_pass.csv"
+).astype(np.int64)
 # YLH: was: tcre_in_all = np.load("../../output/prior_runs/temperature_1pctCO2_1000GtC.npy")
 tcre_in_all = np.load(
     "../../output/prior_runs/temperature_esm_flat10_y100.npy"
@@ -125,7 +127,7 @@ def opt(x, q05_desired, q50_desired, q95_desired):
 # YLH: gives systematic underestimate vs target (FaIR Gregory 95th ~4.7 K < target 6.0 K)
 # YLH: now using analytical ECS (2026-06-16) → AR7 [2, 3.5, 6] K is achievable
 #ecs_params = scipy.optimize.root(opt, [1, 1, 1], args=(2, 3, 5)).x  # AR6, used with Gregory
-ecs_params = scipy.optimize.root(opt, [1, 1, 1], args=(2, 3, 5)).x  # YLH v3: Gregory [2,3,5] K (AR6/v1 target)
+ecs_params = scipy.optimize.root(opt, [1, 1, 1], args=(2, 3.5, 6)).x  # YLH: AR7 5/50/95 K
 
 
 # Indicators 2023
@@ -265,8 +267,9 @@ weights_51yr[-1] = 0.5
 
 accepted = pd.DataFrame(
     {
-        # YLH v3: Gregory ECS already searchsorted to valid_temp_af — no further indexing
-        "ECS": ecs_in,
+        # YLH: analytical ecs.npy is full 2M prior → direct indexing by valid_temp_af
+        # YLH: was ecs_in (Gregory already searchsorted; reverted to analytical 2026-06-16)
+        "ECS": ecs_in[valid_temp_af],
         # YLH: was: "TCR": tcr_in[valid_temp_af],
         "TCR": tcr_in,
         "OHC": ohc_in[valid_temp_af] / 1e21,
