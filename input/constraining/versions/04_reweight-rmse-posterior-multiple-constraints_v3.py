@@ -496,11 +496,12 @@ chosen = np.random.choice(accepted.index, size=841, replace=False, p=weights/np.
 draws = accepted.loc[chosen]
 
 if plots:
-    # YLH: *_prior_all defined at data-loading point (above) — always the broadest available
+    # YLH: *_prior_all defined at data-loading point (above)
     # YLH: for each source. Switching ECS/TCR/TCRE source only requires updating *_prior_all there.
     target_ecs = scipy.stats.gaussian_kde(samples["ECS"])
     prior_ecs = scipy.stats.gaussian_kde(ecs_prior_all)
-    post1_ecs = scipy.stats.gaussian_kde(ecs_in[valid_temp_af])
+    #post1_ecs = scipy.stats.gaussian_kde(ecs_in[valid_temp_af]) # analytical ecs.npy — full 2M prior, index by valid_temp_af:
+    post1_ecs = scipy.stats.gaussian_kde(ecs_in) # Gregory ecs_gregory.npy — already indexed to valid_temp_af:
     post2_ecs = scipy.stats.gaussian_kde(draws["ECS"])
 
     target_tcr = scipy.stats.gaussian_kde(samples["TCR"])
