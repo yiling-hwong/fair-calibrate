@@ -81,6 +81,7 @@ ecs_in = np.load(
     "../../output/prior_runs/ecs.npy"
 )
 ecs_prior_all = ecs_in
+ecs_in = ecs_in[valid_temp_af]  # pre-index to match Gregory convention
 # YLH: Gregory-150yr from abrupt-4xCO2 (ecs_gregory.npy, 02c/02d), positionally indexed within rmse_pass
 #ecs_in_all = np.load(
 #    "../../output/prior_runs/ecs_gregory.npy"
@@ -503,8 +504,8 @@ if plots:
     # YLH: for each source. Switching ECS/TCR/TCRE source only requires updating *_prior_all there.
     target_ecs = scipy.stats.gaussian_kde(samples["ECS"])
     prior_ecs = scipy.stats.gaussian_kde(ecs_prior_all)
-    post1_ecs = scipy.stats.gaussian_kde(ecs_in[valid_temp_af]) # analytical ecs.npy — full 2M prior, index by valid_temp_af:
-    #post1_ecs = scipy.stats.gaussian_kde(ecs_in) # Gregory ecs_gregory.npy — already indexed to valid_temp_af:
+    #post1_ecs = scipy.stats.gaussian_kde(ecs_in[valid_temp_af]) # kept for reference; ecs_in is pre-indexed at load time
+    post1_ecs = scipy.stats.gaussian_kde(ecs_in)  # works for both analytical and Gregory (both pre-indexed to valid_temp_af)
     post2_ecs = scipy.stats.gaussian_kde(draws["ECS"])
 
     target_tcr = scipy.stats.gaussian_kde(samples["TCR"])
